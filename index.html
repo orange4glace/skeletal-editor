@@ -1,0 +1,242 @@
+<head>
+<title>Skeletal Editor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
+<!-- Bootstrap -->
+<link href="http://netdna.bootstrapcdn.com/bootswatch/3.0.3/cerulean/bootstrap.min.css" rel="stylesheet">
+<link href="canvas.css" rel="stylesheet">
+
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
+<script src="https://code.jquery.com/jquery.js"></script> 
+<!-- Latest compiled and minified JavaScript -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+<!-- link rel="stylesheet" type="text/css" href="init.css"/-->
+<!-- link rel="stylesheet" type="text/css" href="canvas.css"/-->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="glMatrix-0.9.5c.js"></script>
+<script type="text/javascript" src="webgl-utils.js"></script>
+<script type="text/javascript" src="Bone.js"></script>
+<script type="text/javascript" src="BoneManager.js"></script>
+<script type="text/javascript" src="Slider.js"></script>
+<script type="text/javascript" src="Animation.js"></script>
+<script type="text/javascript" src="AnimationInfo.js"></script>
+<script type="text/javascript" src="Keyframe.js"></script>
+<script type="text/javascript" src="FileSaver.js"></script>
+<script type="text/javascript" src="BoneToFile.js"></script>
+<script type="text/javascript" src="AnimationInfoToFile.js"></script>
+<script type="text/javascript" src="processing-1.4.1.min.js"></script>
+<script type="text/javascript" src="webGL_1.js"></script>
+<script type="text/javascript" src="example.js"></script>
+<style>
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+html,body {height: 100%; padding-top: 5px; }
+h1 {
+	font-family: 'Nanum Gothic', sans-serif;
+}
+p {
+	font-family: 'Nanum Gothic', sans-serif;
+}
+a {
+	font-family: 'Nanum Gothic', sans-serif;
+}
+#div_animations > p {
+  cursor: pointer;
+  transition: .3s;
+}
+#div_animations > p:hover {
+  background: lightblue;
+}
+.ex-c {
+  background: #ddd;
+  margin: 2px;
+  transition: .3s;
+}
+.ex-c:hover {
+  background: lightblue;
+}
+#wrap {
+	min-height: 100%;
+  height: auto;
+  /* Negative indent footer by its height */
+  margin: 0 auto -60px;
+  /* Pad bottom by footer height */
+  padding-bottom:60px;
+}
+#footer {
+	height: 60px;
+	background-color:#eee;
+}
+canvas:focus {
+	outline: none;
+}
+
+* {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+</style>
+</head>
+
+<body>
+<div id="wrap">
+
+<!-- 본문 -->
+<div class="help help0">Click to remove tooltips</div>
+
+<div class="container">
+  <div id="top" class="row"> 
+    <!-- 캔버스 -->
+    <div class="col-md-10 panel panel-default" style="height:650px">
+      <canvas id="canvas" data-processing-sources="processing.pde" class="panel-body"></canvas>
+    </div>
+    <!-- 메뉴 -->
+    <div class="col-md-2 panel panel-default" style="height:650px">
+		<div class="help help2">Load examples ▶</div>
+		<div class="help help3">Select tool ▶</div>
+		<div class="help help4">Keyframe functions ▶</div>
+      <div class="div_tools">
+        <form id="tools" role="form">
+          <div class="radio">
+            <label>
+              <input id="tool_mouse" name="tool" type="radio" value="0" checked="checked">
+              <strong>MOUSE</strong> (KEY 1)</label>
+              </div>
+              <div class="radio">
+            <label>
+              <input id="tool_scaler" name="tool" type="radio" value="2">
+              <strong>SCALER</strong> (KEY 2)</label>
+              </div>
+              <div class="radio">
+            <label>
+              <input id="tool_pencil" name="tool" type="radio" value="1">
+              <strong>PENCIL</strong> (KEY 3)</label>
+              </div>
+              <div class="radio">
+            <label>
+              <input id="tool_eraser" name="tool" type="radio" value="3">
+              <strong>ERASER</strong> (KEY 4)</label>
+              </div>
+        </form>
+      </div>
+      <hr style="margin-bottom: 10px; margin-top: 10px;">
+      <!-- 정보 -->
+      <form class="form-horizontal" role="form">
+        <div class="div_boneProperty form-group">
+          <label for="b_x" class="col-xs-2 control-label" style="padding-top: 5px;">X</label>
+          <div class="col-xs-10">
+            <input class="form-control input-sm" id="b_x">
+          </div>
+          <label for="b_y" class="col-xs-2 control-label" style="padding-top: 5px;">Y</label>
+          <div class="col-xs-10">
+            <input class="form-control input-sm" id="b_y">
+          </div>
+          <label for="b_a" class="col-xs-4 control-label" style="padding-top: 5px;">ANGLE</label>
+          <div class="col-xs-8">
+            <input class="form-control input-sm" id="b_a">
+          </div>
+          <label for="b_l" class="col-xs-4 control-label" style="padding-top: 5px;">LENGTH</label>
+          <div class="col-xs-8">
+            <input class="form-control input-sm" id="b_l">
+          </div>
+          <label for="b_n" class="col-xs-4 control-label" style="padding-top: 5px;">NAME</label>
+          <div class="col-xs-8">
+            <input class="form-control input-sm" id="b_n">
+          </div>
+          <label for="b_p" class="col-xs-4 control-label" style="padding-top: 5px;">PARENT</label>
+          <div class="col-xs-8">
+            <input class="form-control input-sm" id="b_p">
+          </div>
+          <p id="log"></p>
+        </div>
+      </form>
+      <hr style="margin-bottom: 10px; margin-top: 10px;">
+      <!-- 애니메이션조작 --> 
+      <!--form class="form-horizontal" role="form"-->
+      <div id="div_animInfo" class="form-group">
+        <div class="form-horizontal" role="form">
+          <div class="form-group" style="margin-bottom:0px;">
+            <label for="inp_frameCount" class="col-xs-7 control-label" style="padding-top: 5px; padding-left: 0px; padding-right: 10px">Total Frame</label>
+            <div class="col-xs-5">
+              <input id="inp_frameCount" class="form-control input-sm">
+            </div>
+            <label for="inp_fps" class="col-xs-7 control-label" style="padding-top: 5px;">FPS</label>
+            <div class="col-xs-5">
+              <input id="inp_fps" class="form-control input-sm" value="30" style="margin-bottom:5px;">
+            </div>
+          </div>
+        </div>
+        <button id="btn_newKeyframe" class="btn btn-default btn-sm btn-block"><span class="glyphicon glyphicon-record"></span> Add Keyframe</button>
+        <button id="btn_removeKeyframe" class="btn btn-default btn-sm btn-block"><span class="glyphicon glyphicon-remove-circle"></span> Remove Keyframe</button>
+        <div class="row" style="margin:0px">
+          <button id="btn_copy" class="btn btn-default btn-sm col-xs-6" style="margin-top: 5px;">Copy</button>
+          <button id="btn_paste" class="btn btn-default btn-sm col-xs-6"style="margin-top: 5px;">Paste</button>
+        </div>
+        <button id="btn_toggleAnim" class="btn btn-primary btn-sm btn-block"style="margin-top: 5px;"><span class="glyphicon glyphicon-play-circle"></span> Start Animation</button>
+        <div class="row" style="margin:0px">
+          <button id="btn_save" class="btn btn-default btn-sm col-xs-6"style="margin-top: 5px;"><span class="glyphicon glyphicon-floppy-save"></span> Save</button>
+          <!--input id="inp_save"-->
+          <button id="btn_load" class="btn btn-default btn-sm col-xs-6"style="margin-top: 5px;"><span class="glyphicon glyphicon-floppy-open"></span> Load</button>
+        </div>
+        <textarea class="form-control" rows="2" id="text_load" placeholder="the contents of xml file" style="font-size:10px; padding:5px; margin-top: 5px;"></textarea>
+        <!--textarea id="text_load"></textarea-->
+        <p style="font-size:9pt">Examples <span id="do2_1" class="ex-c" style="font-size:12pt; font-weight:bold; cursor:pointer;">1st </span><span id="do2_2" class="ex-c" style="font-size:12pt; font-weight:bold; cursor:pointer;">2nd </span><span id="do2_3" class="ex-c" style="font-size:12pt; font-weight:bold; cursor:pointer;">3rd </span> </p>
+      </div>
+    </div>
+  </div>
+  <!-- 하단 -->
+  <div class="bottom row"style="height:280px;"> 
+    <!-- 애니메이션목록 -->
+    <div class="col-md-2 panel panel-default" style="height:100%;">
+		<div class="help help1">▼ Select or Add animations</div>
+      <p class="text-center">ANIMATION</p>
+      <div id="div_animations" style="height:145px; overflow:auto"></div>
+      <div style="position:absolute; bottom:0px;">
+        <p style="margin-bottom: 0px;"><small>Add Animation</small></p>
+        <div class="row"style="margin-right: 15px; margin-left: -15px;">
+          <div class="col-xs-8"style="padding-right: 0px;">
+            <input id="inp_anim" class="form-control input-sm" type="text" placeholder="Anim. Name">
+            </input>
+          </div>
+          <div class="col-xs-4" style="margin-right: 0px; margin-left: -10;margin-bottom: 5px;">
+            <button id="btn_newAnim" class="btn btn-default btn-sm">ADD</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 본 리스트 -->
+    <div id="div_keyframes_wrap" class="col-md-2 col-xs-3 panel panel-default" style="height:100%; padding-right: 0px;">
+        <div id="div_keyframes_info_name" style="height:25; overflow:hidden; border:1px dotted red; text-align:center;margin-right: 15px;"> </div>
+        <div id="div_keyframes_name" class="text-right" style="width:100%; height:250px; white-space:nowrap; overflow-x:scroll; overflow-y:hidden;"></div>
+      </div>
+    <!-- 타임라인 -->
+    <div id="div_keyframes_wrap" class="col-md-8 col-xs-9 panel panel-default" style="height:100%; padding-left: 0px;">
+		<div class="help help5">▼ Keyframe window (Drag to multi-select)</div>
+      <div>
+        <div id="div_keyframes_info" style="width: 100%; height:25; white-space:nowrap; overflow-x:hidden; overflow-y:scroll;"></div>
+        <div id="div_keyframes" style="width: 100%; height:250; white-space:nowrap; overflow-x:scroll; overflow-y:scroll;"></div>
+      </div>
+    </div>
+  </div>
+  <!-- 하단 끝 -->
+  <div id="div_log" style="margin-top:10px; padding:5px; color:deeppink; font-weight:bold; border:1px pink solid"></div>
+</div>
+</div>
+<!-- 내용 끝-->
+<div id="footer">
+<div class="container">
+  <p>
+  <ul class="list-inline">
+    <li><strong>Shift + C</strong>: Copy frames</li>
+    <li><strong>Shift + V</strong>: Paste frames</li>
+    <li><strong>Shift + Q</strong>: Add a frame</li>
+    <li><strong>Shift + D</strong>: Delete a frame</li>
+  </ul>
+  </p>
+  <p>Right click with Pencil tool at the beginning of Root bone to add child bone of it. If you want to cancel adding a bone while adding it, click opposite mouse button.</p>
+</div>
+</div>

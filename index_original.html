@@ -1,0 +1,88 @@
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>MG Games Skeletal Editor</title>
+	<link rel="stylesheet" type="text/css" href="init.css"/>
+	<link rel="stylesheet" type="text/css" href="canvas.css"/>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="glMatrix-0.9.5c.js"></script>
+	<script type="text/javascript" src="webgl-utils.js"></script>
+	<script type="text/javascript" src="Bone.js"></script>
+	<script type="text/javascript" src="BoneManager.js"></script>
+	<script type="text/javascript" src="Slider.js"></script>
+	<script type="text/javascript" src="Animation.js"></script>
+	<script type="text/javascript" src="AnimationInfo.js"></script>
+	<script type="text/javascript" src="Keyframe.js"></script>
+	<script type="text/javascript" src="FileSaver.js"></script>
+	<script type="text/javascript" src="BoneToFile.js"></script>
+	<script type="text/javascript" src="AnimationInfoToFile.js"></script>
+	<script type="text/javascript" src="processing-1.4.1.min.js"></script>
+	<script type="text/javascript" src="webGL_1.js"></script>
+	<script type="text/javascript" src="example.js"></script>
+
+</head>
+
+<body>
+<div class="top" style="position:relative">
+	<div class="div_inline">
+		<canvas id="canvas" width=800 height=600 data-processing-sources="processing.pde" style="border:1px solid gray;">
+	</div>
+	<div class="div_inline" style="position:absolute; left:820; padding:3; border:1px solid black;">
+		<div class="div_tools">
+			<form id="tools">
+				<p><label for="tool_mouse">MOUSE</label>  <input id="tool_mouse" name="tool" type="radio" value="0" checked="checked">(KEY 1)</p>
+				<p><label for="tool_pencil">SCALER</label>  <input id="tool_scaler" name="tool" type="radio" value="2">(KEY 2)</p>
+				<p><label for="tool_pencil">PENCIL</label>  <input id="tool_pencil" name="tool" type="radio" value="1">(KEY 3)</p>
+				<p><label for="tool_pencil">ERASER</label>  <input id="tool_eraser" name="tool" type="radio" value="3">(KEY 4)</p>
+			</form>
+		</div>
+		<div class="div_boneProperty">
+			<p>X : <input id="b_x"></p>
+			<p>Y : <input id="b_y"></p>
+			<p>ANGLE : <input id="b_a"></p>
+			<p>LENTH : <input id="b_l"></p>
+			<p>NAME : <input id="b_n"></p>
+			<p>PARENT : <input id="b_p"></p>
+			<p id="log"></p>
+		</div>
+	</div>
+	<div class="div_inline" style="position:absolute; left:820; bottom:0; padding:3; border:1px solid black;">
+		<div id="div_animInfo" class="div_inline" style="width: 200; height:270; float:left; white-space:nowrap; padding:5; overflow:hidden">
+			<p>Frame Count <input id="inp_frameCount" style="width:40"></input> FPS <input id="inp_fps" style="width:40" value="30"></p>
+			<p><button id="btn_newKeyframe" class="default">New Keyframe</button></p>
+			<p><button id="btn_removeKeyframe" class="default">Remove Keyframe</button></p>
+			<p><button id="btn_copy" class="default">Copy</button> <button id="btn_paste" class="default">Paste</button></p>
+			<p><button id="btn_toggleAnim" class="default">Start Animation</button></p>
+			<p><button id="btn_save" class="default">Save</button><input id="inp_save"></p>
+			<p><button id="btn_load" class="default">Load</button><textarea id="text_load"></textarea></p>
+			<p style="font-size:9pt">두이예제불러오기 
+				<span id="do2_1" style="font-weight:bold; cursor:pointer;">1번 </span><span id="do2_2" style="font-weight:bold; cursor:pointer;">2번 </span><span id="do2_3" style="font-weight:bold; cursor:pointer;">3번 </span>
+			</p>
+		</div>
+	</div>
+</div>
+<div class='bottom'>
+	<div class="div_animation" style="width:1060; height:280px; padding:3; padding-bottom:10; border:1px solid black">
+		<div class="div_inline" style="width:150; height:270; float:left; padding:3px; position:relative">
+			<p>ANIMATION</p>
+			<div id="div_animations" style="height:145; overflow:auto"></div>
+			<div style="position:absolute; bottom:0; height:40">
+				<p>Add Animation</p>
+				<input id="inp_anim" style="width:100"></input>
+				<button id="btn_newAnim" class="default">ADD</button>
+			</div>
+		</div>
+		<div id="div_keyframes_wrap" class="div_inline" style="width: 900; height:285; float:left;" >
+			<div>
+				<div id="div_keyframes_info_name" style="width: 98; height:25; overflow:hidden; float:left; border:1px dotted red; text-align:center"></div>
+				<div id="div_keyframes_info" style="width: 800; height:27; white-space:nowrap; overflow-x:hidden; overflow-y:scroll; float:left;"></div>
+			</div>
+			<div>
+				<div id="div_keyframes_name" style="width: 100; height:255; white-space:nowrap; overflow-y:hidden; overflow-x:scroll; float:left"></div>
+				<div id="div_keyframes" style="width: 800; height:255; white-space:nowrap; overflow-y:scroll; overflow-x:scroll; float:left;"></div>
+			</div>
+		</div>
+	</div>
+	<div id="div_log" style="margin-top:10px; padding:5px; color:deeppink; font-weight:bold; height:20px; border:1px pink solid"></div>
+	<div id="div_log" style="margin-top:10px;">단축키 : <b>SHIFT+</b> C : 프레임복사, V : 프레임붙여넣기, Q : 프레임추가, D : 프레임삭제</div>
+	<div style="margin-top:10px;">SuperBone의 끝지점이 아닌 시작지점에 뼈를 추가하시려면 오른쪽마우스로 추가하시면 됩니다. 뼈를 그리는 도중 취소하시려면 반대편 마우스를 클릭하세요.</div>
+</div>
